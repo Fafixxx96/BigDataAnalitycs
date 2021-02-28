@@ -5,6 +5,8 @@ PROCEDURES:
 1. Go to spotify for developpers -> https://developer.spotify.com/
 2. Go to /dashboard -> https://developer.spotify.com/dashboard/
 3. Create your application clicking on button -> "create new project"
+
+--------------------------------------------------------------------------------
   
 My credential, accessing throgh facebook:
 
