@@ -6,6 +6,13 @@ PROCEDURES:
 2. Go to /dashboard -> https://developer.spotify.com/dashboard/
 3. Create your application clicking on button -> "create new project"
 
+My credential, accessing through facebook:
+
+
+Client ID     -> 4b7a6ff9e9e242208bcb12834b0244ac
+
+Client Secret -> 786b8540a1c74b3491db3f8f1170185d
+
 4. Log in using one of these flows:
 
 https://developer.spotify.com/documentation/general/guides/authorization-guide/
@@ -20,9 +27,4 @@ supported by spotipy:
 
 --------------------------------------------------------------------------------
   
-My credential, accessing through facebook:
 
-
-Client ID     -> 4b7a6ff9e9e242208bcb12834b0244ac
-
-Client Secret -> 786b8540a1c74b3491db3f8f1170185d
