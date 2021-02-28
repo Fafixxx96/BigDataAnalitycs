@@ -6,6 +6,14 @@ PROCEDURES:
 2. Go to /dashboard -> https://developer.spotify.com/dashboard/
 3. Create your application clicking on button -> "create new project"
 
+LOG IN FLOWS:
+
+- Authorization Code Flow -> This flow is suitable for long-running applications in which the user grants permission only once. It provides an access token that can be refreshed. Since the token exchange involves sending your secret key, perform this on a secure location, like a backend service, and not from a client such as a browser or from a mobile app.
+
+- The Client Credentials Flow -> The method makes it possible to authenticate your requests to the Spotify Web API and to obtain a higher rate limit than you would with the Authorization Code flow.
+
+
+
 --------------------------------------------------------------------------------
   
 My credential, accessing throgh facebook:
