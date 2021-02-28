@@ -7,8 +7,8 @@ PROCEDURES:
 --------------------------------------------------------------------------------
 My credential, accessing through facebook:
 
-Client ID     -> 4b7a6ff9e9e242208bcb12834b0244ac
-Client Secret -> 786b8540a1c74b3491db3f8f1170185d
+- Client ID     -> 4b7a6ff9e9e242208bcb12834b0244ac
+- Client Secret -> 786b8540a1c74b3491db3f8f1170185d
 
 --------------------------------------------------------------------------------
 5. Log in using one of these flows:
