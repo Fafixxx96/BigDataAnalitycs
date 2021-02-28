@@ -16,7 +16,7 @@ LOG IN FLOWS:
 
 --------------------------------------------------------------------------------
   
-My credential, accessing throgh facebook:
+My credential, accessing through facebook:
 
 
 Client ID     -> 4b7a6ff9e9e242208bcb12834b0244ac
