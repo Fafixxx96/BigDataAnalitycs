@@ -19,7 +19,11 @@ supported by spotipy:
 
 - Authorization Code Flow -> This flow is suitable for long-running applications in which the user grants permission only once. It provides an access token that can be refreshed. Since the token exchange involves sending your secret key, perform this on a secure location, like a backend service, and not from a client such as a browser or from a mobile app.
 
-- The Client Credentials Flow -> The method makes it possible to authenticate your requests to the Spotify Web API and to obtain a higher rate limit than you would with the Authorization Code flow.
+- Client Credentials Flow -> The method makes it possible to authenticate your requests to the Spotify Web API and to obtain a higher rate limit than you would with the Authorization Code flow.
+
+FOR OUR SCOPE WE HAVE TO USE THE "Client Credential Flow"
+
+![Cattura](https://user-images.githubusercontent.com/59933159/109431293-0fe52500-7a06-11eb-8463-8c7ff814f96e.PNG)
 
 --------------------------------------------------------------------------------
   
