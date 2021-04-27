@@ -30,6 +30,7 @@ def get_artist(name):
 
 def show_artist_albums(artist):
     albums = []
+    print(artist['id'])
     results = sp.artist_albums(artist['id'], album_type='album')
     albums.extend(results['items'])
     while results['next']:
@@ -43,11 +44,23 @@ def show_artist_albums(artist):
             logger.info('ALBUM: %s', name)
             seen.add(name)
 
+def show_artist_tracks(artist):
+    results = sp.search(q=artist, limit=20)
+    print(len(results))
+    for i, t in enumerate(results['tracks']['items']):
+        print(' ', i, t['name'])
+
+def show_recommendations_for_artist(artist):
+    results = sp.recommendations(seed_artists=[artist['id']])
+    for track in results['tracks']:
+        logger.info('Recommendation: %s - %s', track['name'],
+                    track['artists'][0]['name'])
+
 
 def main():
     
-    urn = 'spotify:artist:3jOstUTkEu2JkjvRdBA5Gu' #uniform resource name
-    artist = get_artist('Fabri Fibra')
+    #urn = 'spotify:artist:3jOstUTkEu2JkjvRdBA5Gu' #uniform resource name
+    artist = get_artist('tiziano ferro')
     if artist:
         show_artist_albums(artist)
     else:
