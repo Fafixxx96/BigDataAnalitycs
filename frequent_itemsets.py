@@ -47,11 +47,17 @@ def get_tracks_in_playlist(playlist_id):
     info = []
     for item in tracks:
         track_obj = item['track']
-        features = track_obj['id']
+        features = [track_obj['id'], track_obj['name']]
         info.append(features)
     return info
 
-def get_tracks_audio_features_dataset(track_ids):
+def get_track_name(track_id, songs):
+   for song in songs:
+       if (track_id == song[0]):
+           return song[1]
+
+
+def get_tracks_audio_features_dataset(tracks):
     dataset = [['ID',
                 'danceability',
                 'energy',
@@ -60,6 +66,9 @@ def get_tracks_audio_features_dataset(track_ids):
                 'acousticness',
                 'instrumentalness',
                 'valence']]
+    track_ids = []
+    for i in range (0, len(tracks)):
+        track_ids.append(tracks[i][0])
     for current_id in track_ids:
         track_features = client.audio_features(current_id)[0]
         new_features = [current_id]
@@ -69,7 +78,7 @@ def get_tracks_audio_features_dataset(track_ids):
     dataset2 = []
     for row in dataset:
         if not(row == dataset[0]):
-            dataset2.append(preprocessing_track_features(row))
+            dataset2.append(preprocessing_track_features(row, tracks))
     return dataset2
 
 def convert_attribute(attribute, name):
@@ -86,9 +95,9 @@ def convert_attribute2(attribute, name):
     else:
         return  name + "_HIGH"
 
-def preprocessing_track_features(track_features):
+def preprocessing_track_features(track_features, songs):
     new_row = []
-    new_row.append(track_features[0])
+    new_row.append(get_track_name(track_features[0], songs))
     new_row.append(convert_attribute(track_features[1], "Danceability"))
     new_row.append(convert_attribute(track_features[2], "Energy"))
     new_row.append(convert_attribute(track_features[3], "Mode"))
@@ -96,12 +105,12 @@ def preprocessing_track_features(track_features):
     new_row.append(convert_attribute(track_features[5], "Acousticness"))
     new_row.append(convert_attribute2(track_features[6], "Instrumentalness"))
     new_row.append(convert_attribute(track_features[7], "Valence"))
-    #print(new_row)
+    print(new_row)
     return new_row
 
 def association_rules(records):
     apriori_alg = apriori(records, min_support=0.40, min_confidence=0.7, min_lift=1.2, min_length=2) 
-    results = list(apriori_alg)
+    results = list(apriori_alg) 
     return results
 
 def print_rules(association_rules):
@@ -110,8 +119,14 @@ def print_rules(association_rules):
         # Contains base item and add item
         pair = item[0] 
         items = [x for x in pair]
-        print()
-        print("Rule: " + items[0] + " -> " + items[1] + " " + items[2] )
+        
+        s = "Rule: " + items[0] + " -> "
+        for i in range (1,len(items)):
+            if(i == len(items)-1):
+                s += items[i]
+                break
+            s += items[i] + ", "
+        print (s)
         #second index of the inner list
         print("Support: " + str(item[1]))
         #third index of the list located at 0th
@@ -128,12 +143,15 @@ def main():
     #show_artist_albums(a_id)
     playlists = get_playlists(fabio_capparelli_id)
     for p in playlists:
+        print()
         print("PLAYLIST:", p[1])
+        print()
         songs = get_tracks_in_playlist(p[0])
         dataset = get_tracks_audio_features_dataset(songs)
+        print()
         rules_mined = association_rules(dataset)
         print_rules(rules_mined)
-        break      
+             
     
 
 if __name__ == "__main__":
