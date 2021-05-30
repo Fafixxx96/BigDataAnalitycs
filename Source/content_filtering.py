@@ -1,7 +1,7 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import json
-from Auth_Parameters import *
+from auth_parameters import *
 
 #------------------------------------------GLOBAL VARIABLES------------------------------------------#
 
