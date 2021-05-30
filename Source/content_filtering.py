@@ -1,20 +1,26 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import json
+from Auth_Parameters import *
 
+#------------------------------------------GLOBAL VARIABLES------------------------------------------#
 
-#Fabio Capparelli credentials
-client_id = "4b7a6ff9e9e242208bcb12834b0244ac"
-client_secret = "786b8540a1c74b3491db3f8f1170185d"
+#FABIO CAPPARELLI DEVELOPPER CREDENTIAL
+#client_id = "4b7a6ff9e9e242208bcb12834b0244ac"
+#client_secret = "786b8540a1c74b3491db3f8f1170185d"
+
+#PARAMETERS AND SCOPES FOR SPOTIFY QUERIES
 redirect_uri = "http://localhost:8080"
 scope = 'playlist-read-private'
 scope2 = 'user-library-read'
 scope3 = "playlist-modify-public"
 
+#SPOTIFY USER IDS
 fabio_capparelli_id = "11102339711"
 francesco_raco_id = "prp468n1n5qp2sdr1ps5hk8t0"
 pierpaolo_presta_id = "1198192219"
 
+#CLIENTS FOR SPOTIFY CONNECTION
 client_1 = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=client_id, 
                                                            client_secret=client_secret))
 
@@ -38,12 +44,27 @@ client_5 = spotipy.Spotify(auth_manager=SpotifyOAuth( client_id=client_id,
                                                       redirect_uri=redirect_uri, 
                                                       scope=scope3 ))
 
-def json_print(js):
-  print(json.dumps(js, indent=4, sort_keys=True))
-
+#DICT/SETS USED FOR STORING USER PLAYLIST TRACKS AND NEW SPOTIFY RELEASES
 user_tracks_set = { 'id': [], "name": [], "artist": []}
 new_releases_set = { 'id': [],  "name": [], "artist": []}
 
+#------------------------------------------GLOBAL FUNCTIONS------------------------------------------#
+
+#FUNCTION USED TO PRINT THE RETURNED JSON RESULTS FROM QUERIES
+def json_print(js):
+  print(json.dumps(js, indent=4, sort_keys=True))
+
+#FUNCTION USED TO PRINT RECOMENDATION DICT
+def print_dict(diz):
+    for i in range (0, len(diz['id'])):
+       print(diz['name'][i], " | ", diz['artist'][i],  " | ", diz['value'][i])
+
+#FUNCITON USED TO PRINT USER PLAYLISTS
+def print_playlists(playlists):
+    for i, p in enumerate(playlists):
+        print(i, p['id'], p['name'])
+
+#FUNCTION USED TO ADD USER TRACKS TO THE OWN DICT/SET
 def add_tracks_set(track_id, track_name, track_artist):
     global user_tracks_set
     if not (track_id in user_tracks_set['id']):
@@ -51,6 +72,7 @@ def add_tracks_set(track_id, track_name, track_artist):
         user_tracks_set['name'].append(track_name)
         user_tracks_set['artist'].append(track_artist)
 
+#FUNCTION USED TO ADD NEW RELEASE TRACKS TO THE OWN DICT/SET
 def add_new_releases_set(track_id, track_name, track_artist):
     global new_releases_set
     if not (track_id in new_releases_set['id']):
@@ -74,10 +96,8 @@ def user_tracks_saved_albums():
     for item in albums['items']:
         album = item['album']
         tracks_album = client_3.album_tracks(album['id'])
-        
         for track in tracks_album['items']:
             add_tracks_set(track['id'], track['name'])
-
 
 def user_tracks_in_playlists(user_id):
     playlists = client_2.user_playlists(user_id)
@@ -87,6 +107,7 @@ def user_tracks_in_playlists(user_id):
             track = item['track']
             add_tracks_set(track['id'], track['name'])
 """
+#FUNCTION USED TO RETRIEVE USER PLAYLISTS
 def get_user_paylists(user_id):
     playlist_list = []
     results = client_2.user_playlists(user_id)
@@ -96,6 +117,7 @@ def get_user_paylists(user_id):
         playlist_list.extend(results['items'])
     return playlist_list
 
+#FUNCTION USED TO RETRIEVE TRACKS IN USER PLAYLISTS
 def get_playlists_tracks(playlist_list):
     for playlist in playlist_list:
         tracks = []
@@ -107,48 +129,34 @@ def get_playlists_tracks(playlist_list):
         for item in tracks:
             track_obj = item['track']
             artists = track_obj['artists']
-            s = ""
+            artists_names = ""
             for artist in artists:
-                s += " " + artist['name']
-            add_tracks_set(track_obj['id'], track_obj['name'], s)
+                artists_names += (" " + artist['name'])
+            add_tracks_set(track_obj['id'], track_obj['name'], artists_names)
 
+#FUNCTION USED TO DISCOVER NEW RELEASE AND ADD IT IN THE OWN SET
 def new_spotify_releases():
     response = client_2.new_releases()
     while response:
         albums = response['albums']
         for album in albums['items']:
             tracks_album = client_3.album_tracks(album['id'])
+            artists = album['artists']
+            artists_names = ""
+            for artist in artists:
+                artists_names += (" " + artist['name'])
             for track in tracks_album['items']:
-                add_new_releases_set(track['id'], track['name'], album['name'])
+                add_new_releases_set(track['id'], track['name'], artists_names)          
         if albums['next']:
             response = client_2.next(albums)
         else:
             response = None
 
-def return_value(inf, sup, value):
-        int1 = value - inf
-        int2 = sup - value
-        if(int1 <= int2):
-            return inf*5
-        else:
-            return sup*5
-
+#FUNCTION USED TO CONVERT ATTRIBUTE IN A VALUE IN THE INTEGER INTERVAL [0, 5]
 def convert_attribute(attribute):
-    if(attribute <= 0.2):
-        return return_value(0.0, 0.2, attribute)
-    elif(attribute > 0.20 and attribute <= 0.4 ):
-        return return_value(0.2, 0.4, attribute)
-    elif(attribute > 0.4 and attribute <= 0.6 ):
-        return return_value(0.4, 0.6, attribute)
-    elif(attribute > 0.6 and attribute <= 0.8 ):
-      return return_value(0.6, 0.8, attribute)
-    elif(attribute > 0.8 and attribute <= 1 ):
-      return return_value(0.8, 1.0, attribute)
-    return 0
+  return round(attribute*5)
 
-def convert_attribute2(attribute):
-   return return_value(0, 1, attribute)
-           
+#FUNCTION USED TO RETRIEVE THE AUDIO FEATURE FOR THE TRACKS IN THE SET         
 def get_tracks_audio_features_dataset(tracks_set):
     dataset = [['ID',
                 'NAME',
@@ -160,12 +168,10 @@ def get_tracks_audio_features_dataset(tracks_set):
                 'acousticness',
                 'instrumentalness',
                 'valence']]
-    j = 0
-    for current_id in tracks_set['id']:
+    for j, current_id in enumerate(tracks_set['id']):
         track_features = client_2.audio_features(current_id)[0]
         if track_features is not None:
             new_features = [current_id, tracks_set['name'][j], tracks_set['artist'][j]]
-            j+=1
             for i in range(3, len(dataset[0])):
                 new_features.append(track_features[dataset[0][i]])
             dataset.append(new_features)
@@ -174,117 +180,79 @@ def get_tracks_audio_features_dataset(tracks_set):
         if not(row == dataset[0]):
             dataset2.append(preprocessing_track_features(row))
     return dataset2
-    
 
+#FUCTION USED TO PRE-PROCESS THE VALUE OF AUDIO_FEATURES
 def preprocessing_track_features(track_features):
     new_row = []
-    new_row.append(track_features[0])
-    new_row.append(track_features[1])
-    new_row.append(track_features[2])
-    new_row.append(convert_attribute(track_features[3]))# "Danceability"
-    new_row.append(convert_attribute(track_features[4]))# "Energy"
-    new_row.append(convert_attribute(track_features[5]))# "Mode"
-    new_row.append(convert_attribute(track_features[6]))# "Speechiness"
-    new_row.append(convert_attribute(track_features[7]))# "Acousticness"
-    new_row.append(convert_attribute2(track_features[8]))# "Instrumentalness"
-    new_row.append(convert_attribute(track_features[9]))# "Valence"
+    for i, feature in enumerate(track_features):
+        if(i<3):
+            new_row.append(feature)
+        else:
+            new_row.append(convert_attribute(feature))
     return new_row
 
-d = 0
-e = 0
-m = 0
-s = 0
-a = 0
-i = 0
-v = 0
-length_dataset = 0
-
+#FUCTION USED TO GET THE USER AUDIO FEATURES VALUES, IT IS USED THE AVERAGE VALUE FOR EACH AUDIO FEATURE
 def mean_value_user_track_features(dataset):
-    global d, e, m, s, a, i, v, length_dataset
+    len_dataset = len(dataset)-1
+    vect = [0, 0, 0, 0, 0, 0, 0]
     for row in dataset:
         if not(row == dataset[0]):
-            d += row[3]
-            e += row[4]
-            m += row[5]
-            s += row[6]
-            a += row[7]
-            i += row[8]
-            v += row[9]
-    length_dataset = len(dataset)-1
-    record = []
-    d = (d/length_dataset)
-    record.append(round(d))
-    e = (e/length_dataset)
-    record.append(round(e))
-    m = (m/length_dataset)
-    record.append(round(m))
-    s = (s/length_dataset)
-    record.append(round(s))
-    a = (a/length_dataset)
-    record.append(round(a))
-    i = (i/length_dataset)
-    record.append(round(i))
-    v = (v/length_dataset)
-    record.append(round(v))
-    #print(record)
-    return record
+            for i in range (0, len(vect)):
+                vect[i] += row[i+3]
+    for i in range (0, len(vect)):
+        vect[i] = round(vect[i]/len_dataset)
+    return vect
 
+#FUCTION USED TO BUIL RECOMMENDATION DICT, IT SUGGEST NEW TRACKS.
 def build_recommendation(user_record, new_tracks):
-    recommedation = { 'id': [], 'name': [], 'artist': [], 'value': [] }
-    i=0
+    recommendation = { 'id': [], 'name': [], 'artist': [], 'value': [] }
+    sum_of_sums = 0
     for row in new_tracks:
         sum = 0
-        j=3
-        for val in user_record:
-            val2 = new_tracks[i][j]
-            ris = val * val2
-            sum = sum + ris
-            j += 1
-        
+        for j, val in enumerate(user_record):
+            sum += val*row[j+3]
         if sum > 50:
-            recommedation['id'].append(row[0])
-            recommedation['name'].append(row[1])
-            recommedation['artist'].append(row[2])
-            recommedation['value'].append(sum)
-        i += 1
-    #print(sum)
-    return(recommedation) 
+            recommendation['id'].append(row[0])
+            recommendation['name'].append(row[1])
+            recommendation['artist'].append(row[2])
+            recommendation['value'].append(sum)
+        sum_of_sums += sum
+    print(sum_of_sums/len(new_tracks))
+    return(recommendation) 
 
-def print_dict(diz):
-    for i in range (0, len(diz['id'])):
-       print(diz['name'][i], " | ", diz['artist'][i],  " | ", diz['value'][i])
-
+#FUCTION USED TO CREATE A NEW PLAYLIST
 def new_playlist(user_id, name):
     client_5.user_playlist_create(user_id, name)
 
-def add_to_playlist(playlist_id, songs_ids):
+#FUCTION USED TO ADD TRACKS TO A PLAYLIST
+def add_tracks_to_playlist(playlist_id, songs_ids):
     for id in songs_ids:
         client_5.playlist_add_items(playlist_id, id)
 
-def print_playlists(playlists):
-    for i, p in enumerate(playlists):
-        print(i, p['id'], p['name'])
-
 def main():
+    
     print()
     user_id = input("Insert user id: ")
     print()
     while (user_id == None):
         print()
-        user_id = input("Please insert user id: ")
+        user_id = input("Please insert non-empty user id: ")
+    
     user_playlists = get_user_paylists(user_id)
-    print_playlists(user_playlists)
+    #print_playlists(user_playlists)
     get_playlists_tracks(user_playlists)
    
     user_audio_features_dataset = get_tracks_audio_features_dataset(user_tracks_set)
     user_record = mean_value_user_track_features(user_audio_features_dataset)
     print(user_record)
+
     new_spotify_releases()
     new_audio_features_dataset = get_tracks_audio_features_dataset(new_releases_set)
     recommendations = build_recommendation(user_record, new_audio_features_dataset)
     print_dict(recommendations)
-    print(recommendations['id'])
+    
 
+    """
     new = input("Do you want to create a new playlist with these songs [y,n]?: ")
     print()
     if(new == 'y'):
@@ -294,10 +262,11 @@ def main():
             name = input("No void name allowed, please insert a playlist name: ")
         new_playlist(user_id, name)
         print_playlists(user_playlists)
-        add_to_playlist(user_playlists[len(user_playlists)-1]['id'], recommendations['id'])
+        add_tracks_to_playlist(user_playlists[len(user_playlists)-1]['id'], recommendations['id'])
 
     elif(new == 'n'):
         name = input("Do you want to add these songs to an existing playlist [y,n]?: ")
+    """
 
 if __name__ == "__main__":
   main()

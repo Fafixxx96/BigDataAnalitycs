@@ -24,7 +24,6 @@ client = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=client_id,
 def json_print(js):
   print(json.dumps(js, indent=4, sort_keys=True))
 
-
 def get_playlists(user_id):
     playlist_list = []
     results = client.user_playlists(user_id)
@@ -80,21 +79,28 @@ def get_tracks_audio_features_dataset(tracks):
             dataset2.append(preprocessing_track_features(row, tracks))
     return dataset2
 
+def return_value(inf, sup, value):
+        int1 = value - inf
+        int2 = sup - value
+        if(int1 <= int2):
+            return inf
+        else:
+            return sup
 
+def convert_attribute(attribute):
+    if(attribute <= 0.25):
+        return return_value(0, 0.25, attribute)
+    elif(attribute > 0.25 and attribute <= 0.5 ):
+        return return_value(0.25, 0.5, attribute)
+    elif(attribute > 0.5 and attribute <= 0.75 ):
+        return return_value(0.5, 0.75, attribute)
+    elif(attribute > 0.75 and attribute <= 1 ):
+      return return_value(0.75, 1, attribute)
+    return 0
 
-def convert_attribute(attribute, name):
-    if(attribute < 0.33):
-        return  [name + "_LOW", 1]
-    elif(attribute > 0.66):
-        return  [name + "_HIGH", 3]
-    else:
-        return [name + "_MEDIUM", 2]
-
-def convert_attribute2(attribute, name):
-    if(attribute < 0.5):
-        return  [name + "_LOW", 1]
-    else:
-        return  [name + "_HIGH", 3]
+def convert_attribute2(attribute):
+   return return_value(0, 1, attribute)
+ 
 d = 0
 e = 0
 m = 0
@@ -149,4 +155,4 @@ def main():
     
 
 if __name__ == "__main__":
-  main()
+  main() 

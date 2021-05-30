@@ -60,12 +60,16 @@ def show_recommendations_for_artist(artist):
 def main():
     
     #urn = 'spotify:artist:3jOstUTkEu2JkjvRdBA5Gu' #uniform resource name
+    """
     artist = get_artist('tiziano ferro')
     if artist:
         show_artist_albums(artist)
     else:
         logger.error("Can't find artist: %s", artist)
-    
+    """
+
+    name = "Pierpaolo Presta"
+    sp.search(q='username:' + name, type='username')
 
 
 if __name__ == "__main__":
